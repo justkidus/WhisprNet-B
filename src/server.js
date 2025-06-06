@@ -18,7 +18,7 @@ app.use(
 		origin: [
 			'http://localhost:5173',
 			//  'https://whispr-net-f.vercel.app',
-			'https://whispr-net.vercel.app/',
+			'https://whispr-net.vercel.app',
 		],
 		credentials: true,
 	})

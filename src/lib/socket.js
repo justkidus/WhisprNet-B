@@ -11,7 +11,7 @@ const io = new Server(server, {
 		origin: [
 			'http://localhost:5173',
 			// 'https://whispr-net-f.vercel.app'
-			'https://whispr-net.vercel.app/',
+			'https://whispr-net.vercel.app',
 		],
 	},
 });
