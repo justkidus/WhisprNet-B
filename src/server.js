@@ -15,7 +15,11 @@ app.use(express.json({ limit: '10mb' }));
 app.use(cookieParser());
 app.use(
 	cors({
-		origin: ['http://localhost:5173', 'https://whispr-net-f.vercel.app'],
+		origin: [
+			'http://localhost:5173',
+			//  'https://whispr-net-f.vercel.app',
+			'https://whispr-net.vercel.app/',
+		],
 		credentials: true,
 	})
 );
