@@ -2,7 +2,7 @@ const express = require('express');
 const { Group } = require('../models/group.model');
 
 const createGroup = async (req, res) => {
-	const { name } = req.body;
+	const { name, members = [] } = req.body;
 	if (!name) {
 		return res.status(400).json('group name needed');
 	}
@@ -12,10 +12,12 @@ const createGroup = async (req, res) => {
 		if (groupname) {
 			return res.status(400).json('group name alread used');
 		}
+		const uniqueMembers = [...new Set([req.user._id, ...members])];
+
 		const newGroup = new Group({
 			name,
 			admin: req.user._id,
-			members: [req.user._id], // creator should be a member too
+			members: uniqueMembers, // creator should be a member too
 		});
 
 		await newGroup.save();
@@ -89,4 +91,31 @@ const removeGroup = async (req, res) => {
 	}
 };
 
-module.exports = { createGroup, addMembers, removeMember, removeGroup };
+const getAllGroups = async (req, res) => {
+	try {
+		const getAllGroup = await Group.find();
+		res.status(200).json(getAllGroup);
+	} catch (error) {
+		console.log("error in get all group's", error.msg);
+		res.status(500).json('internal server error');
+	}
+};
+const getGroupMember = async (req, res) => {
+	const userId = req.user._id;
+	try {
+		const fetchMembers = await Group.find({
+			$or: [{ admin: userId }, { members: userId }],
+		}).populate('admin members');
+		res.json(fetchMembers);
+	} catch (error) {
+		res.status(500).json('internal server error');
+	}
+};
+module.exports = {
+	createGroup,
+	addMembers,
+	removeMember,
+	removeGroup,
+	getAllGroups,
+	getGroupMember,
+};

@@ -28,6 +28,12 @@ io.on('connection', (socket) => {
 	//io.emit is used to send events to all the connceted clients in easy word to boardcast it
 	io.emit('getOnlineUsers', Object.keys(userSocketMap));
 
+	// join a group (room)
+	socket.on('joinRoom', (roomId) => {
+		socket.join(roomId);
+		console.log(`${userId} joined room: ${roomId}`);
+	});
+
 	socket.on('disconnect', () => {
 		console.log('A user is disconnected', socket.id);
 		delete userSocketMap[userId];

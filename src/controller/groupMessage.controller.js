@@ -1,14 +1,12 @@
 const { GroupMessage } = require('../models/group.Message.model');
-
+const { getGroupSocketId, io, getReceiverSocketId } = require('../lib/socket');
 const getGroupMessage = async (req, res) => {
 	try {
-		const { groupId } = req.params;
-		const myId = req.user._id;
-
-		const groupMessage = await GroupMessage.find({
-			groupId,
-			senderId: myId,
+		const { groupId: groupId } = req.params; //so for me to this work i have to make it groupId instead if id
+		const groupMessage = await GroupMessage.find({ groupId }).sort({
+			createdAt: 1,
 		});
+
 		res.status(200).json(groupMessage);
 	} catch (error) {
 		console.log('error at the get group messages');
@@ -28,18 +26,19 @@ const sendMessageToGroup = async (req, res) => {
 			const uploadResponse = await cloudinary.uploader.upload(image);
 			imageUrl = uploadResponse.secure_url;
 		}
-		const newMessage = new GroupMessage({
+		const newGroupMessage = new GroupMessage({
 			senderId,
 			groupId,
 			text,
 			image: imageUrl,
 		});
-		await newMessage.save();
-
-		res.status(201).json(newMessage);
+		await newGroupMessage.save();
+		io.to(groupId).emit('newGroupMessage', newGroupMessage);
+		res.status(201).json(newGroupMessage);
 	} catch (error) {
 		console.log('error at the send group messages');
 		res.status(500).json('Intenal server error');
 	}
 };
+
 module.exports = { getGroupMessage, sendMessageToGroup };
