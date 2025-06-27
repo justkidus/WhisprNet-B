@@ -1,5 +1,7 @@
 const { GroupMessage } = require('../models/group.Message.model');
 const { getGroupSocketId, io, getReceiverSocketId } = require('../lib/socket');
+const { cloudinary } = require('../lib/cloudinary');
+
 const getGroupMessage = async (req, res) => {
 	try {
 		const { groupId: groupId } = req.params; //so for me to this work i have to make it groupId instead if id

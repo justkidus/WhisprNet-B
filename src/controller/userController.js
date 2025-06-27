@@ -90,23 +90,20 @@ const updateProfile = async (req, res) => {
 		const { profilePic } = req.body;
 
 		const userId = req.user._id;
-		if (!profilePic) {
-			return res.status(400).json({
-				msg: 'profile pic required',
+		const updateData = {};
+		if (fullName) updateData.fullName = fullName;
+
+		if (profilePic) {
+			const uploadResponse = await cloudinary.uploader.upload(profilePic, {
+				folder: 'profile_pics',
 			});
+			updateData.profilePic = uploadResponse.secure_url;
 		}
-		const updateName = await User.findByIdAndUpdate(
-			userId,
-			{ fullName: fullName },
-			{ new: true }
-		);
-		const uploadResponse = await cloudinary.uploader.upload(profilePic);
-		const updatedUser = await User.findByIdAndUpdate(
-			userId,
-			{ profilePic: uploadResponse.secure_url },
-			{ new: true }
-		);
-		res.status(200).json({ updatedUser, updateName });
+
+		const updatedUser = await User.findByIdAndUpdate(userId, updateData, {
+			new: true,
+		});
+		return res.status(200).json({ updatedUser });
 	} catch (error) {
 		console.log('error in update Profile', error);
 		return res.status(500).json({ msg: 'internal server error' });

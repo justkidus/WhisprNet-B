@@ -1,6 +1,8 @@
 const User = require('../models/user.models');
 const { Message } = require('../models/message.model');
 const { getReceiverSocketId, io } = require('../lib/socket');
+const { cloudinary } = require('../lib/cloudinary');
+
 const getAllUsers = async (req, res) => {
 	try {
 		const loggedUser = req.user._id;
@@ -59,7 +61,9 @@ const sendMessage = async (req, res) => {
 		}
 		res.status(201).json(newMessage);
 	} catch (error) {
-		console.log('error in send messages', error.msg);
+		console.log('❌ Error in send messages:', error.msg);
+		console.error(error); // <-- shows full Cloudinary error
+
 		res.status(500).json('internal server error');
 	}
 };
