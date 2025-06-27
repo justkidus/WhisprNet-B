@@ -60,6 +60,7 @@ const sendMessage = async (req, res) => {
 			io.to(receiverSocketId).emit('newMessage', newMessage);
 		}
 		res.status(201).json(newMessage);
+		console.log('message sent successfully');
 	} catch (error) {
 		console.log('❌ Error in send messages:', error.msg);
 		console.error(error); // <-- shows full Cloudinary error
